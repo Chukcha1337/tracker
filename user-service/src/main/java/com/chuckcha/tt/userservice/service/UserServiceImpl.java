@@ -5,16 +5,13 @@ import com.chuckcha.tt.core.user.UserCreationRequest;
 import com.chuckcha.tt.core.user.UserResponse;
 import com.chuckcha.tt.userservice.entity.User;
 import com.chuckcha.tt.userservice.exception.UserAlreadyExistsException;
+import com.chuckcha.tt.userservice.exception.UserNotFoundException;
 import com.chuckcha.tt.userservice.mapper.UserMapper;
 import com.chuckcha.tt.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-
-import java.util.Optional;
-import java.util.zip.DataFormatException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +37,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
 
     }
-//    public Optional<UserResponse> findByUsername(String username) {
-//        return userRepository.findByUsername(username)
-//                .map(userMapper::toResponse)
-//                .orElseThrow(DataFormatException::new);
-//    }
+
+    public UserResponse findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
+    }
+
+
 }

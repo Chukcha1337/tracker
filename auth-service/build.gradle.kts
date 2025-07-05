@@ -15,6 +15,7 @@ dependencies {
 	runtimeOnly(libs.jjwt.jackson)
 	runtimeOnly(libs.jjwt.impl)
 	implementation(libs.spring.boot.starter.data.redis)
+	implementation(libs.spring.boot.starter.security)
 	implementation(libs.spring.boot.starter.validation)
 	implementation(libs.lombok)
 	annotationProcessor(libs.lombok)
