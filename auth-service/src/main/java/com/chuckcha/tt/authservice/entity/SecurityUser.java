@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 public class SecurityUser implements UserDetails, CredentialsContainer {
 
+    private Long id;
     private final String username;
     @JsonIgnore
     private String password;
@@ -28,6 +29,7 @@ public class SecurityUser implements UserDetails, CredentialsContainer {
 
     public static SecurityUser from(UserResponse user) {
         return SecurityUser.builder()
+                .id(user.id())
                 .username(user.username())
                 .password(user.password())
                 .authorities(List.of(user.role()))

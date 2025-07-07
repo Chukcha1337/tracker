@@ -9,6 +9,7 @@ liquibase = "4.31.1"
 kotlin = "1.9.23"
 jwt = "0.11.5"
 mapstruct = "1.5.5.Final"
+jedis = "6.0.0"
 
 
 [libraries]
@@ -16,19 +17,21 @@ spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter",
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring-boot" }
 spring-boot-starter-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
-spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "spring-boot"}
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "spring-boot" }
-spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server"}
-spring-cloud-config-client = { module = "org.springframework.cloud:spring-cloud-starter-config"}
-spring-cloud-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"}
-spring-cloud-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"}
-spring-cloud-open-feign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign"}
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server" }
+spring-cloud-config-client = { module = "org.springframework.cloud:spring-cloud-starter-config" }
+spring-cloud-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server" }
+spring-cloud-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client" }
+spring-cloud-open-feign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test", version.ref = "spring-kafka" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
-liquibase = { module = "org.liquibase:liquibase-core", version.ref = "liquibase"}
+liquibase = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jwt" }
@@ -40,5 +43,5 @@ mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.re
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-managment"}
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-managment" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

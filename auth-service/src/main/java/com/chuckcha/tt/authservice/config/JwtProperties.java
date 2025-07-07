@@ -5,11 +5,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties(prefix = "security.jwt")
 @Data
 public class JwtProperties {
 
-    private String secretKey;
+    private String privateKeyPath;
+    private String publicKeyPath;
     private long accessTokenExpiration;
     private long refreshTokenExpiration;
 

@@ -2,6 +2,7 @@ package com.chuckcha.tt.authservice.service;
 
 import com.chuckcha.tt.authservice.entity.SecurityUser;
 import com.chuckcha.tt.authservice.feign.UserClient;
+import com.chuckcha.tt.authservice.security.JwtTokenProvider;
 import com.chuckcha.tt.core.auth.JwtRequest;
 import com.chuckcha.tt.core.auth.JwtResponse;
 import com.chuckcha.tt.core.mapper.RegistrationMapper;
@@ -20,7 +21,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
     private final UserClient userClient;
     private final RegistrationMapper mapper;
-    private final JwtServiceImpl jwtService;
+    private final JwtTokenProvider jwtService;
 
     @Override
     public JwtResponse register(RegistrationRequest registrationRequest) {
