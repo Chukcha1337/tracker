@@ -1,18 +1,26 @@
 package com.chuckcha.tt.userservice.mapper;
 
+import com.chuckcha.tt.core.user.Role;
 import com.chuckcha.tt.core.user.UserCreationRequest;
 import com.chuckcha.tt.core.user.UserResponse;
 import com.chuckcha.tt.userservice.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import jakarta.persistence.Column;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    UserResponse toResponse(User user);
+    public UserResponse toResponse(User user) {
+        return new UserResponse(user.getId(), user.getUsername(), user.getPassword(), user.getRole());
+    }
 
-    @Mapping(target = "role", constant = "ROLE_USER")
-    @Mapping(target = "id", ignore = true)
-    User toEntity(UserCreationRequest userCreationRequest);
+    public User toEntity(UserCreationRequest userCreationRequest) {
+        return User.builder()
+                .username(userCreationRequest.username())
+                .password(userCreationRequest.password())
+                .email(userCreationRequest.email())
+                .role(Role.USER)
+                .build();
+
+    }
 }

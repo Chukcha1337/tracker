@@ -17,6 +17,7 @@ dependencies {
 	implementation(libs.spring.boot.starter.data.redis)
 	implementation(libs.jedis)
 	implementation(libs.spring.boot.starter.security)
+	implementation(libs.commons.codec)
 	annotationProcessor(libs.spring.boot.configuration.processor)
 	implementation(libs.spring.boot.starter.validation)
 	implementation(libs.lombok)

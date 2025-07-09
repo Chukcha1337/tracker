@@ -1,15 +1,16 @@
 [versions]
 spring-boot = "3.5.3"
-spring-dependency-managment = "1.1.7"
+spring-dependency-management = "1.1.7"
 spring-cloud = "2025.0.0"
-lombok = "1.18.28"
+lombok = "1.18.38"
 postgresql = "42.7.7"
 spring-kafka = "3.3.7"
 liquibase = "4.31.1"
 kotlin = "1.9.23"
-jwt = "0.11.5"
-mapstruct = "1.5.5.Final"
+jwt = "0.12.6"
+mapstruct = "1.6.3"
 jedis = "6.0.0"
+commons-codec = "1.18.0"
 
 
 [libraries]
@@ -19,13 +20,14 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-starter-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring-boot" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
-spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
 spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "spring-boot" }
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server" }
 spring-cloud-config-client = { module = "org.springframework.cloud:spring-cloud-starter-config" }
 spring-cloud-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server" }
 spring-cloud-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client" }
+spring-cloud-starter-gateway-server-mvc = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc" }
 spring-cloud-open-feign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka", version.ref = "spring-kafka" }
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test", version.ref = "spring-kafka" }
@@ -37,11 +39,12 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jwt" }
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 
 
 
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-managment" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

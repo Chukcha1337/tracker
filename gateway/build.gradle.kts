@@ -1,36 +1,26 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.5.3"
-	id("io.spring.dependency-management") version "1.1.7"
+	alias(libs.plugins.spring.boot)
+	alias(libs.plugins.spring.dependency.management)
 }
-
-group = "com.chuckcha.tt"
-version = "0.0.1-SNAPSHOT"
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
-	}
-}
-
-repositories {
-	mavenCentral()
-}
-
-extra["springCloudVersion"] = "2025.0.0"
 
 dependencies {
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation(project(":core"))
+	implementation(libs.spring.boot.starter)
+	implementation(libs.spring.boot.starter.security)
+	implementation(libs.spring.boot.starter.web)
+	implementation(libs.spring.cloud.config.client)
+	implementation(libs.spring.cloud.starter.gateway.server.mvc)
+	implementation(libs.spring.cloud.eureka.client)
+	implementation(libs.lombok)
+	annotationProcessor(libs.lombok)
+	implementation(libs.spring.boot.starter.data.redis)
+	implementation(libs.commons.codec)
+
 }
 
 dependencyManagement {
 	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
 	}
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
 }

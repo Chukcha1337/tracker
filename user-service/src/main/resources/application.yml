@@ -1,3 +1,9 @@
+logging:
+  level:
+    org.springframework.cloud.config: DEBUG
+    org.springframework.boot.context.config: DEBUG
+server:
+  port: 8070
 spring:
   config:
     import: optional:configserver:http://localhost:8888

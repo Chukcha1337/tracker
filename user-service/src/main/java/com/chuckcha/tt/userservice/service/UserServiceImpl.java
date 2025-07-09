@@ -20,10 +20,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserResponse getUser(RegistrationRequest userRequest) {
-        return null;
-    }
-
     @Transactional
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toEntity(request);
@@ -34,15 +30,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void deleteUser(String userId) {
+    public void deleteUser(Long userId) {
 
     }
 
-    public UserResponse findUserByUsername(String username) {
+    public UserResponse getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(userMapper::toResponse)
                 .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
     }
 
 
+    public UserResponse getUserById(Long id) {
+            return userRepository.findById(id)
+                    .map(userMapper::toResponse)
+                    .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
+    }
 }

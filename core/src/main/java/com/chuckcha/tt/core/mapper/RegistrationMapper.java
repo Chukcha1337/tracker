@@ -4,9 +4,11 @@ import com.chuckcha.tt.core.user.RegistrationRequest;
 import com.chuckcha.tt.core.user.UserCreationRequest;
 import org.mapstruct.Mapper;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface RegistrationMapper {
+public class RegistrationMapper {
 
-    UserCreationRequest toUserCreationRequest(RegistrationRequest registrationRequest);
+    public UserCreationRequest toUserCreationRequest(RegistrationRequest registrationRequest) {
+        return new UserCreationRequest(registrationRequest.username(), registrationRequest.password(), registrationRequest.email());
+    }
 }

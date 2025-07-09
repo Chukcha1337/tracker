@@ -1,86 +1,115 @@
 package com.chuckcha.tt.authservice.security;
 
 import com.chuckcha.tt.authservice.config.JwtProperties;
+import com.chuckcha.tt.core.auth.JwtUtils;
+import com.chuckcha.tt.authservice.feign.UserClient;
 import com.chuckcha.tt.authservice.service.AuthService;
 import com.chuckcha.tt.core.auth.JwtResponse;
 import com.chuckcha.tt.core.user.Role;
 import com.chuckcha.tt.core.user.UserResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.interfaces.RSAPublicKey;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private final JwtProperties props;
-    private final UserDetailsService userDetailsService;
-    private final AuthService authService;
+    private final UserClient userClient;
+    private final RedisTemplate<String, String> redisTemplate;
     private RSAPrivateKey privateKey;
+    private RSAPublicKey publicKey;
 
     @PostConstruct
     public void init() {
-        this.privateKey = loadPrivateKey(props.getPrivateKeyPath());
+        this.privateKey = JwtUtils.loadPrivateKey(props.getPrivateKeyPath());
+        this.publicKey = JwtUtils.loadPublicKey(props.getPublicKeyPath());
     }
 
     public String createAccessToken(Long userId, String username, Role role) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("id", userId);
-        claims.put("roles", role.getAuthority());
-        return buildToken(claims, props.getAccessTokenExpiration());
+        Claims claims = Jwts.claims()
+                .subject(username)
+                .add("id", String.valueOf(userId))
+                .add("role", role)
+                .build();
+        Instant validity = Instant.now()
+                .plus(props.getAccessTokenExpiration(), ChronoUnit.HOURS);
+        return buildToken(claims, validity);
     }
 
     public String createRefreshToken(Long userId, String username) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("id", userId);
-        return buildToken(claims, props.getRefreshTokenExpiration());
+        Claims claims = Jwts.claims()
+                .subject(username)
+                .add("id", String.valueOf(userId))
+                .build();
+        Instant validity = Instant.now()
+                .plus(props.getRefreshTokenExpiration(), ChronoUnit.DAYS);
+        String refreshToken = buildToken(claims, validity);
+        String redisKey = buildRefreshKey(userId);
+        redisTemplate.opsForValue().set(redisKey, refreshToken, props.getRefreshTokenExpiration(), TimeUnit.DAYS);
+        return refreshToken;
     }
 
     public JwtResponse refreshUserTokens(String refreshToken) {
+        if (JwtUtils.isInvalid(refreshToken, publicKey)) {
+            throw new AccessDeniedException("Invalid refresh token");
+        }
+        Long userId = Long.valueOf(JwtUtils.getId(refreshToken, publicKey));
+        String redisKey = buildRefreshKey(userId);
 
+        String storedToken = redisTemplate.opsForValue().get(redisKey);
+        if (storedToken == null || !storedToken.equals(refreshToken)) {
+            throw new AccessDeniedException("Refresh token is invalid or expired");
+        }
+        UserResponse user = userClient.getUserById(userId).getBody();
+        return new JwtResponse(
+                userId,
+                user.username(),
+                createAccessToken(userId, user.username(), user.role()),
+                createRefreshToken(userId, user.username()));
     }
 
-    private String buildToken(Claims claims, Long tokenExpiration) {
-        Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime() + tokenExpiration);
+    public void logout(String accessToken) {
+        if (JwtUtils.isInvalid(accessToken, publicKey)) {
+            throw new AccessDeniedException("Invalid refresh token");
+        }
+        Long userId = Long.valueOf(JwtUtils.getId(accessToken, publicKey));
+        String refreshKey = buildRefreshKey(userId);
+        redisTemplate.delete(refreshKey);
 
+        long ttl = JwtUtils.getExpirationMillis(accessToken, publicKey);
+
+        String blacklistAccessKey = buildBlacklistKey(accessToken);
+        redisTemplate.opsForValue().set(blacklistAccessKey, "removed", ttl, TimeUnit.MILLISECONDS);
+    }
+
+    private String buildToken(Claims claims, Instant validity) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(issuedDate)
-                .setExpiration(expiredDate)
-                .signWith(key)
+                .claims(claims)
+                .expiration(Date.from(validity))
+                .signWith(privateKey)
                 .compact();
     }
 
-    private RSAPrivateKey loadPrivateKey(String path) {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
-            String key = new String(is.readAllBytes(), StandardCharsets.UTF_8)
-                    .replaceAll("-----BEGIN PRIVATE KEY-----", "")
-                    .replaceAll("-----END PRIVATE KEY-----", "")
-                    .replaceAll("\\s", "");
+    private String buildRefreshKey(Long userId) {
+        return "auth:refresh:" + userId;
+    }
 
-            byte[] decoded = Base64.getDecoder().decode(key);
-            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return (RSAPrivateKey) keyFactory.generatePrivate(spec);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Could not load private key", e);
-        }
+    private String buildBlacklistKey(String accessToken) {
+        return "auth:blacklist:" + DigestUtils.sha256Hex(accessToken);
+    }
 }

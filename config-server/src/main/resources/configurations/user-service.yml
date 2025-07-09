@@ -1,9 +1,7 @@
-server:
-  port: 8070
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/user
+    url: jdbc:postgresql://localhost:5433/postgres
     username: chuckcha
     password: chuckcha
   jpa:
@@ -11,3 +9,5 @@ spring:
       ddl-auto: validate
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 8070

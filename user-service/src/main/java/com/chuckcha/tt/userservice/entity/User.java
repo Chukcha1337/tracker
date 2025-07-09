@@ -2,17 +2,15 @@ package com.chuckcha.tt.userservice.entity;
 
 import com.chuckcha.tt.core.user.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
-@Table(name = "users")
+@Builder
+@Table(name = "users", schema = "users_schema")
 public class User {
 
     @Id

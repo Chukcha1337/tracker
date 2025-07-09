@@ -1,0 +1,2 @@
+user gateway on >gateway-password ~auth:blacklist:* +get
+user auth-service on >auth-password ~auth:* +get +set +del

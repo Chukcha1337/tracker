@@ -15,10 +15,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(UserAlreadyExistsException.class)
-  public ResponseEntity<String> handle(UserAlreadyExistsException exp) {
-    return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body(exp.getMessage());
-  }
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handle(UserAlreadyExistsException exp) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(exp.getMessage());
+    }
+
+
 }
