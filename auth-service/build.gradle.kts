@@ -8,10 +8,13 @@ plugins {
 dependencies {
 	implementation(project(":core"))
 	implementation(libs.spring.boot.starter)
+	implementation(libs.spring.cloud.config.client)
 	implementation(libs.spring.cloud.eureka.client)
 	implementation(libs.spring.boot.starter.web)
 	implementation(libs.spring.cloud.open.feign)
+	implementation(libs.spring.cloud.loadbalancer)
 	implementation(libs.jjwt.api)
+	implementation(libs.springdoc.starter.webmvc.ui)
 	runtimeOnly(libs.jjwt.jackson)
 	runtimeOnly(libs.jjwt.impl)
 	implementation(libs.spring.boot.starter.data.redis)

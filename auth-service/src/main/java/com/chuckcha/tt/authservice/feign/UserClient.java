@@ -14,14 +14,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@FeignClient(name = "user-service", path = "/internal/users")
+@FeignClient(
+        name = "user-service",
+        url = "http://localhost:8070", // Прямой URL (замените на реальный)
+        path = "/internal/users"
+)
 public interface UserClient {
 
     @PostMapping()
     ResponseEntity<UserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest);
 
     @GetMapping("/by-username/{username}")
-    ResponseEntity<UserResponse> getUserByUsername(@PathVariable("username") @NotBlank @NotNull String username);
+    ResponseEntity<UserResponse> getUserByUsername(@PathVariable("username") String username);
 
     @GetMapping("/by-id/{id}")
     ResponseEntity<UserResponse> getUserById(@PathVariable("id") @NotBlank @NotNull Long id);

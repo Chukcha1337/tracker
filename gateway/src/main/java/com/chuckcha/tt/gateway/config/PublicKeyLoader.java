@@ -3,14 +3,15 @@ package com.chuckcha.tt.gateway.config;
 import com.chuckcha.tt.core.auth.JwtUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
 
 @Component
 @Getter
+@Lazy
 public class PublicKeyLoader {
 
     @Value("${security.jwt.public-key-path}")

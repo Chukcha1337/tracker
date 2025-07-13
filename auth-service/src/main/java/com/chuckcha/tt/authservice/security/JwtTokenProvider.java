@@ -34,13 +34,16 @@ public class JwtTokenProvider {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
 
-    @PostConstruct
-    public void init() {
-        this.privateKey = JwtUtils.loadPrivateKey(props.getPrivateKeyPath());
-        this.publicKey = JwtUtils.loadPublicKey(props.getPublicKeyPath());
+    private void initKeysIfNecessary() {
+        if (privateKey == null || publicKey == null) {
+            System.out.println("Loading keys from config...");
+            this.privateKey = JwtUtils.loadPrivateKey(props.getPrivateKeyPath());
+            this.publicKey = JwtUtils.loadPublicKey(props.getPublicKeyPath());
+        }
     }
 
     public String createAccessToken(Long userId, String username, Role role) {
+        initKeysIfNecessary();
         Claims claims = Jwts.claims()
                 .subject(username)
                 .add("id", String.valueOf(userId))
@@ -52,6 +55,7 @@ public class JwtTokenProvider {
     }
 
     public String createRefreshToken(Long userId, String username) {
+        initKeysIfNecessary();
         Claims claims = Jwts.claims()
                 .subject(username)
                 .add("id", String.valueOf(userId))
@@ -65,6 +69,7 @@ public class JwtTokenProvider {
     }
 
     public JwtResponse refreshUserTokens(String refreshToken) {
+        initKeysIfNecessary();
         if (JwtUtils.isInvalid(refreshToken, publicKey)) {
             throw new AccessDeniedException("Invalid refresh token");
         }
@@ -77,13 +82,12 @@ public class JwtTokenProvider {
         }
         UserResponse user = userClient.getUserById(userId).getBody();
         return new JwtResponse(
-                userId,
-                user.username(),
                 createAccessToken(userId, user.username(), user.role()),
                 createRefreshToken(userId, user.username()));
     }
 
     public void logout(String accessToken) {
+        initKeysIfNecessary();
         if (JwtUtils.isInvalid(accessToken, publicKey)) {
             throw new AccessDeniedException("Invalid refresh token");
         }

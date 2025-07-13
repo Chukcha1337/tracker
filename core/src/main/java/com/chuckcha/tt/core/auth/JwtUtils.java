@@ -20,7 +20,9 @@ import java.util.Date;
 public class JwtUtils {
 
     public RSAPublicKey loadPublicKey(String path) {
+        System.out.println("Loading private key from: " + path);
         try (InputStream is = JwtUtils.class.getClassLoader().getResourceAsStream(path)) {
+            System.out.println("IS NULL? " + (is == null));
             String key = new String(is.readAllBytes(), StandardCharsets.UTF_8)
                     .replaceAll("-----BEGIN PUBLIC KEY-----", "")
                     .replaceAll("-----END PUBLIC KEY-----", "")

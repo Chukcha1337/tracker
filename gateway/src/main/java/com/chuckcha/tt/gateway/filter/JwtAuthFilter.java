@@ -1,93 +1,120 @@
 package com.chuckcha.tt.gateway.filter;
 
 import com.chuckcha.tt.core.auth.JwtUtils;
+import com.chuckcha.tt.gateway.config.AuthProperties;
 import com.chuckcha.tt.gateway.config.PublicKeyLoader;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthFilter implements WebFilter {
 
-    private final PublicKeyLoader publicKeyLoader;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectProvider<PublicKeyLoader> publicKeyLoader;
+    private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
+    private final AuthProperties authProperties;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    // Белый список
-    private static final List<String> WHITELIST = List.of(
-            "/api/v1/auth/login",
-            "/api/v1/auth/register",
-            "/api/v1/auth/public-key",
-            "/internal/"
-    );
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
 
-        String path = request.getRequestURI();
+        String path = request.getURI().getPath();
         if (isWhitelisted(path)) {
-            filterChain.doFilter(request, response);
-            return;
+            return chain.filter(exchange);
         }
 
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
-            return;
+        String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return unauthorized(exchange, "Missing or invalid Authorization header");
         }
 
-        String token = header.substring(7);
+        String token = authHeader.substring(7);
 
         try {
-            RSAPublicKey publicKey = publicKeyLoader.getPublicKey();
+            RSAPublicKey publicKey = publicKeyLoader.getObject().getPublicKey();
 
             if (JwtUtils.isInvalid(token, publicKey)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
-                return;
+                return unauthorized(exchange, "Token expired or invalid");
             }
 
             String tokenHash = DigestUtils.sha256Hex(token);
             String redisKey = "auth:blacklist:" + tokenHash;
 
-            if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token revoked");
-                return;
-            }
-            String username = JwtUtils.getSubject(token, publicKey);
-            String role = JwtUtils.getRole(token, publicKey);
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+            Mono<Boolean> hasKey = reactiveRedisTemplate.hasKey(redisKey);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+            return reactiveRedisTemplate.hasKey(redisKey)
+                    .flatMap(exists -> {
+                        if (exists) {
+                            return unauthorized(exchange, "Token revoked");
+                        }
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        String username = JwtUtils.getSubject(token, publicKey);
+                        String userId = JwtUtils.getId(token, publicKey);
+                        String role = JwtUtils.getRole(token, publicKey);
+                        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-            filterChain.doFilter(request, response);
+                        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                authorities
+                        );
+                        ServerHttpRequest mutatedRequest = request.mutate()
+                                .header("x-user-id", userId)
+                                .header("x-username", username)
+                                .header("x-role", role)
+                                .build();
 
+                        ServerWebExchange mutatedExchange = exchange.mutate()
+                                .request(mutatedRequest)
+                                .build();
+
+                        return chain.filter(mutatedExchange)
+                                .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+                    });
         } catch (Exception e) {
             log.error("JWT validation error: {}", e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
+            return unauthorized(exchange, "Token validation failed");
         }
     }
 
     private boolean isWhitelisted(String path) {
-        return WHITELIST.stream().anyMatch(path::startsWith);
+        return authProperties.getWhitelist().stream()
+                .anyMatch(pattern -> pathMatcher.match(pattern, path));
+    }
+
+    private Mono<Void> unauthorized(ServerWebExchange exchange, String message) {
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        String body = "{\"error\": \"" + message + "\"}";
+        DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(body.getBytes(StandardCharsets.UTF_8));
+        return exchange.getResponse().writeWith(Mono.just(buffer));
     }
 }

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService, UserDetailsService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserClient userClient;
     private final RegistrationMapper mapper;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
             String accessToken = jwtTokenProvider.createAccessToken(user.id(), user.username(), user.role());
             String refreshToken = jwtTokenProvider.createRefreshToken(user.id(), user.username());
 
-            return new JwtResponse(user.id(), user.username(), accessToken, refreshToken);
+            return new JwtResponse(accessToken, refreshToken);
         } else {
             throw new UserRegistrationException(
                     "User [%s] couldn't be registered".formatted(registrationRequest.username()));
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
         String accessToken = jwtTokenProvider.createAccessToken(userId, username, role);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId, username);
-        return new JwtResponse(userId, username, accessToken, refreshToken);
+        return new JwtResponse(accessToken, refreshToken);
     }
 
     @Override
@@ -73,9 +73,5 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         jwtTokenProvider.logout(token);
     }
 
-    @Override
-    public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserResponse userResponse = userClient.getUserByUsername(username).getBody();
-        return SecurityUser.from(userResponse);
-    }
+
 }

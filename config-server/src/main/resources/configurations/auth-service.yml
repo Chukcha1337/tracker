@@ -1,17 +1,6 @@
-application:
-  config:
-    user-url: http://localhost:8222/api/v1/users
 server:
   port: 8081
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/authdb
-    username: chuckcha
-    password: chuckcha
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
   data:
     redis:
       host: localhost
@@ -19,12 +8,23 @@ spring:
       username: auth-service
       password: auth-password
   cloud:
-    discovery:
-      enabled: true
+    openfeign:
+      discovery:
+        enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    org.springframework.security.web: DEBUG
 
 security:
   jwt:
-    private-key-path: classpath:keys/private.pem
-    public-key-path: classpath:keys/public.pem
+    private-key-path: keys/private.pem
+    public-key-path: keys/public.pem
     access-token-expiration: 1
     refresh-token-expiration: 30

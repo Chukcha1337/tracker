@@ -62,10 +62,22 @@ public class SecurityConfig {
                                         }))
                 .authorizeHttpRequests(configurer ->
                         configurer.requestMatchers("/api/v1/auth/logout").authenticated()
-                                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll())
-//                .logout(logout -> logout
-//                        .logoutUrl("/api/v1/auth/logout")
-//                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
+                                .requestMatchers(
+                                        "/api/v1/auth/login",
+                                        "/api/v1/auth/register",
+                                        "/api/v1/auth/public-key",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/auth-service/v3/api-docs",
+                                        "/auth-service/v3/api-docs/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/auth-service/swagger-ui.html",
+                                        "/auth-service/swagger-ui/**"
+                                        ).permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)))
                 .anonymous(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }

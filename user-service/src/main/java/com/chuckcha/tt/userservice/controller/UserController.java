@@ -16,16 +16,10 @@ public class UserController {
 
     private final UserService userService;
 
-
-
-
-//
-//    @GetMapping("/{username}")
-//    public ResponseEntity<UserResponse> getByUsername(@PathVariable String username) {
-//        return userService.findByUsername(username)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMe(@RequestHeader("x-user-id") String userId) {
+        return ResponseEntity.ok().body(userService.getUserById(Long.parseLong(userId)));
+    }
 
     @DeleteMapping("/{user-id}")
     public ResponseEntity<Void> deleteUser(
