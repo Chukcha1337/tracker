@@ -6,6 +6,7 @@ include(
     "task-service",
     "auth-service",
     "notification-service",
+    "scheduler-service",
     "gateway",
     "core"
     )

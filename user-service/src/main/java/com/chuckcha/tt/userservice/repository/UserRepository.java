@@ -1,6 +1,5 @@
 package com.chuckcha.tt.userservice.repository;
 
-import com.chuckcha.tt.core.user.UserResponse;
 import com.chuckcha.tt.userservice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

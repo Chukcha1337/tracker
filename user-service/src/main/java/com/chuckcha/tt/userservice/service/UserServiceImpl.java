@@ -1,8 +1,8 @@
 package com.chuckcha.tt.userservice.service;
 
-import com.chuckcha.tt.core.user.RegistrationRequest;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import com.chuckcha.tt.core.user.UserCreationRequest;
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.UserEmailResponse;
 import com.chuckcha.tt.userservice.entity.User;
 import com.chuckcha.tt.userservice.exception.UserAlreadyExistsException;
 import com.chuckcha.tt.userservice.exception.UserNotFoundException;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Transactional
-    public UserResponse createUser(UserCreationRequest request) {
+    public SecurityUserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toEntity(request);
         try {
             return userMapper.toResponse(userRepository.save(user));
@@ -34,16 +34,23 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public UserResponse getUserByUsername(String username) {
+    public SecurityUserResponse getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(userMapper::toResponse)
                 .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
     }
 
 
-    public UserResponse getUserById(Long id) {
+    public SecurityUserResponse getUserById(Long id) {
             return userRepository.findById(id)
                     .map(userMapper::toResponse)
                     .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
+    }
+
+    @Override
+    public UserEmailResponse getUserEmailById(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper::toEmailResponse)
+                .orElseThrow(() -> new UserNotFoundException("User with this credentials does not exist"));
     }
 }

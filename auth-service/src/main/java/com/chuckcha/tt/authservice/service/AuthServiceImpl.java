@@ -4,23 +4,17 @@ import com.chuckcha.tt.authservice.entity.SecurityUser;
 import com.chuckcha.tt.core.exception.UserRegistrationException;
 import com.chuckcha.tt.authservice.feign.UserClient;
 import com.chuckcha.tt.authservice.security.JwtTokenProvider;
-import com.chuckcha.tt.core.auth.JwtRequest;
 import com.chuckcha.tt.core.auth.JwtResponse;
 import com.chuckcha.tt.core.mapper.RegistrationMapper;
 import com.chuckcha.tt.core.user.LoginRequest;
 import com.chuckcha.tt.core.user.RegistrationRequest;
 import com.chuckcha.tt.core.user.Role;
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,9 +28,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse register(RegistrationRequest registrationRequest) {
-        ResponseEntity<UserResponse> response = userClient.createUser(mapper.toUserCreationRequest(registrationRequest));
+        ResponseEntity<SecurityUserResponse> response = userClient.createUser(mapper.toUserCreationRequest(registrationRequest));
         if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-            UserResponse user = response.getBody();
+            SecurityUserResponse user = response.getBody();
             String accessToken = jwtTokenProvider.createAccessToken(user.id(), user.username(), user.role());
             String refreshToken = jwtTokenProvider.createRefreshToken(user.id(), user.username());
 

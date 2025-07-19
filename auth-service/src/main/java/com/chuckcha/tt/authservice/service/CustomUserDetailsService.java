@@ -2,7 +2,7 @@ package com.chuckcha.tt.authservice.service;
 
 import com.chuckcha.tt.authservice.entity.SecurityUser;
 import com.chuckcha.tt.authservice.feign.UserClient;
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserResponse userResponse = userClient.getUserByUsername(username).getBody();
+        SecurityUserResponse userResponse = userClient.getUserByUsername(username).getBody();
         return SecurityUser.from(userResponse);
     }
 }

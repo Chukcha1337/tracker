@@ -1,18 +1,13 @@
 package com.chuckcha.tt.authservice.feign;
 
 
-import com.chuckcha.tt.core.user.RegistrationRequest;
 import com.chuckcha.tt.core.user.UserCreationRequest;
-import com.chuckcha.tt.core.user.UserResponse;
-import jakarta.validation.Valid;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @FeignClient(
         name = "user-service",
@@ -22,11 +17,11 @@ import java.util.Optional;
 public interface UserClient {
 
     @PostMapping()
-    ResponseEntity<UserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest);
+    ResponseEntity<SecurityUserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest);
 
     @GetMapping("/by-username/{username}")
-    ResponseEntity<UserResponse> getUserByUsername(@PathVariable("username") String username);
+    ResponseEntity<SecurityUserResponse> getUserByUsername(@PathVariable("username") String username);
 
     @GetMapping("/by-id/{id}")
-    ResponseEntity<UserResponse> getUserById(@PathVariable("id") @NotBlank @NotNull Long id);
+    ResponseEntity<SecurityUserResponse> getUserById(@PathVariable("id") @NotBlank @NotNull Long id);
 }

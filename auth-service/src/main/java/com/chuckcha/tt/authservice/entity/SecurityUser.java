@@ -1,6 +1,6 @@
 package com.chuckcha.tt.authservice.entity;
 
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
@@ -27,7 +27,7 @@ public class SecurityUser implements UserDetails, CredentialsContainer {
     private final boolean credentialsNonExpired;
     private final boolean enabled;
 
-    public static SecurityUser from(UserResponse user) {
+    public static SecurityUser from(SecurityUserResponse user) {
         return SecurityUser.builder()
                 .id(user.id())
                 .username(user.username())

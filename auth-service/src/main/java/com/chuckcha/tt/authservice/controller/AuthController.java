@@ -1,19 +1,14 @@
 package com.chuckcha.tt.authservice.controller;
 
-import com.chuckcha.tt.authservice.feign.UserClient;
 import com.chuckcha.tt.authservice.service.AuthService;
 import com.chuckcha.tt.core.auth.JwtResponse;
 import com.chuckcha.tt.core.user.LoginRequest;
 import com.chuckcha.tt.core.user.RegistrationRequest;
-import com.chuckcha.tt.core.user.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")

@@ -1,12 +1,14 @@
 package com.chuckcha.tt.userservice.service;
 
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import com.chuckcha.tt.core.user.UserCreationRequest;
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.UserEmailResponse;
 
 public interface UserService {
 
-    UserResponse createUser(UserCreationRequest request);
-    UserResponse getUserByUsername(String username);
-    UserResponse getUserById(Long id);
+    SecurityUserResponse createUser(UserCreationRequest request);
+    SecurityUserResponse getUserByUsername(String username);
+    SecurityUserResponse getUserById(Long id);
+    UserEmailResponse getUserEmailById(Long id);
     void deleteUser(Long userId);
 }

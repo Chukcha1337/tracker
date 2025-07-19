@@ -3,18 +3,15 @@ package com.chuckcha.tt.authservice.security;
 import com.chuckcha.tt.authservice.config.JwtProperties;
 import com.chuckcha.tt.core.auth.JwtUtils;
 import com.chuckcha.tt.authservice.feign.UserClient;
-import com.chuckcha.tt.authservice.service.AuthService;
 import com.chuckcha.tt.core.auth.JwtResponse;
 import com.chuckcha.tt.core.user.Role;
-import com.chuckcha.tt.core.user.UserResponse;
+import com.chuckcha.tt.core.user.SecurityUserResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.security.interfaces.RSAPrivateKey;
@@ -80,7 +77,7 @@ public class JwtTokenProvider {
         if (storedToken == null || !storedToken.equals(refreshToken)) {
             throw new AccessDeniedException("Refresh token is invalid or expired");
         }
-        UserResponse user = userClient.getUserById(userId).getBody();
+        SecurityUserResponse user = userClient.getUserById(userId).getBody();
         return new JwtResponse(
                 createAccessToken(userId, user.username(), user.role()),
                 createRefreshToken(userId, user.username()));
