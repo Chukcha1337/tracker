@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "user-service",
-        url = "http://localhost:8070", // Прямой URL (замените на реальный)
         path = "/internal/users"
 )
 public interface UserClient {

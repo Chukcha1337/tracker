@@ -1,9 +1,7 @@
 package com.chuckcha.tt.userservice.mapper;
 
-import com.chuckcha.tt.core.user.Role;
-import com.chuckcha.tt.core.user.SecurityUserResponse;
-import com.chuckcha.tt.core.user.UserCreationRequest;
-import com.chuckcha.tt.core.user.UserEmailResponse;
+import com.chuckcha.tt.core.user.*;
+import com.chuckcha.tt.outbox.dto.UserNameEmailResponse;
 import com.chuckcha.tt.userservice.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +19,14 @@ public class UserMapper {
                 .email(userCreationRequest.email())
                 .role(Role.USER)
                 .build();
-
     }
+
 
     public UserEmailResponse toEmailResponse(User user) {
         return new UserEmailResponse(user.getId(), user.getEmail());
+    }
+
+    public UserNameEmailResponse toNameEmailResponse(User user) {
+        return new UserNameEmailResponse(user.getId(), user.getEmail(), user.getUsername());
     }
 }

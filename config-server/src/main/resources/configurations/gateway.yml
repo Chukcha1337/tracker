@@ -56,6 +56,10 @@ security:
   jwt:
     public-key-path: keys/public.pem
 
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
 app:
   auth:
     whitelist:

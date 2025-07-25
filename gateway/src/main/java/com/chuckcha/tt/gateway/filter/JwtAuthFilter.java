@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -67,8 +68,6 @@ public class JwtAuthFilter implements WebFilter {
 
             String tokenHash = DigestUtils.sha256Hex(token);
             String redisKey = "auth:blacklist:" + tokenHash;
-
-            Mono<Boolean> hasKey = reactiveRedisTemplate.hasKey(redisKey);
 
             return reactiveRedisTemplate.hasKey(redisKey)
                     .flatMap(exists -> {

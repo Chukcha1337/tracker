@@ -1,0 +1,22 @@
+server:
+  port: 8073
+spring:
+  liquibase:
+    database-change-log-lock-table: task_schema.databasechangeloglock
+    database-change-log-table: task_schema.databasechangelog
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: chuckcha
+    password: chuckcha
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

@@ -8,5 +8,6 @@ include(
     "notification-service",
     "scheduler-service",
     "gateway",
-    "core"
+    "core",
+    "outbox"
     )

@@ -19,8 +19,6 @@ dependencies {
 	implementation(libs.spring.cloud.eureka.client)
 	implementation(libs.springdoc.starter.webmvc.ui)
 	implementation(libs.spring.kafka)
-	implementation(libs.spring.boot.starter.jpa)
-	implementation(libs.liquibase)
 	implementation(libs.spring.boot.starter.validation)
 	compileOnly(libs.lombok)
 	implementation(libs.postgresql)

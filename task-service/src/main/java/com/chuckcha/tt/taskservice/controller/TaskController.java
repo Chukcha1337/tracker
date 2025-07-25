@@ -23,13 +23,6 @@ public class TaskController {
         return ResponseEntity.ok().body(taskService.getUserTasks(Long.parseLong(userId), username));
     }
 
-    @GetMapping
-    public ResponseEntity<List<TaskResponse>> getTasksToSend(@RequestHeader("x-user-id") String userId,
-                                                              @RequestHeader("x-username") String username) {
-        return ResponseEntity.ok().body(taskService.getTasksToSend(Long.parseLong(userId), username));
-    }
-
-
     @PostMapping("/create")
     public ResponseEntity<TaskResponse> createTask(
             @RequestHeader("x-user-id") String userId,
@@ -38,6 +31,4 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(
                 Long.parseLong(userId), username, creationRequest));
     }
-
-
 }

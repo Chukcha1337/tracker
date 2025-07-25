@@ -1,7 +1,6 @@
 package com.chuckcha.tt.authservice.controller;
 
 import com.chuckcha.tt.authservice.config.JwtProperties;
-import com.chuckcha.tt.core.auth.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.interfaces.RSAPublicKey;
 
 @RestController
 @RequestMapping("/api/v1/auth")

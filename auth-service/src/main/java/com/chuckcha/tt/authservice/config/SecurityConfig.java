@@ -1,6 +1,5 @@
 package com.chuckcha.tt.authservice.config;
 
-import com.chuckcha.tt.core.auth.JwtUtils;
 import com.chuckcha.tt.core.mapper.RegistrationMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -23,10 +22,6 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    RegistrationMapper registrationMapper() {
-        return new RegistrationMapper();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,11 +29,15 @@ public class SecurityConfig {
     }
 
     @Bean
+    RegistrationMapper registrationMapper() {
+        return new RegistrationMapper(passwordEncoder());
+    }
+
+    @Bean
     @SneakyThrows
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
         return configuration.getAuthenticationManager();
     }
-
 
     @Bean
     @SneakyThrows

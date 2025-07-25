@@ -12,6 +12,7 @@ configurations {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":outbox"))
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.web)
