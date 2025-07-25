@@ -11,8 +11,6 @@ services:
       - postgres:/data/postgres
     ports:
       - "5433:5432"
-#    networks:
-#      - microservices-net
     restart: unless-stopped
 
   redis:
@@ -75,11 +73,3 @@ services:
     volumes:
       - a:/kafka/temp/docker-compose/volumes/server-3/:/bitnami/kafka
 
-
-networks:
-  microservices-net:
-    driver: bridge
-
-volumes:
-  postgres:
-  mongo:
