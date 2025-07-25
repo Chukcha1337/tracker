@@ -15,6 +15,7 @@ dependencies {
 	implementation(libs.spring.boot.starter)
 	implementation(libs.spring.boot.starter.security)
 	implementation(libs.spring.boot.starter.web)
+	implementation(libs.spring.boot.starter.mail)
 	implementation(libs.spring.cloud.config.client)
 	implementation(libs.spring.cloud.eureka.client)
 	implementation(libs.springdoc.starter.webmvc.ui)

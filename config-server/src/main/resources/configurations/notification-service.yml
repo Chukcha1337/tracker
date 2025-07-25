@@ -8,3 +8,15 @@ spring:
       trusted-packages: com.chuckcha.tt.core.event
       auto-offset-reset: latest
       isolation-level: read_committed
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: b5e9f7f267e410
+    password: ad58efddf64322
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
