@@ -72,4 +72,6 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAM E=PLAINTEXT
     volumes:
       - a:/kafka/temp/docker-compose/volumes/server-3/:/bitnami/kafka
+volumes:
+  postgres:
 
